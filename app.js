@@ -36,6 +36,7 @@ const checkAppointments = () => {
             `
           );
         }
+        console.log("...OK...");
       } catch (error) {
         console.error(error);
         bot.sendMessage(chatId, `${error}`);
