@@ -42,5 +42,5 @@ const checkAppointments = () => {
         bot.sendMessage(chatId, `${error}`);
       }
     }
-  }, 10000);
+  }, 30000);
 };
