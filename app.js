@@ -13,7 +13,7 @@ const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 var content = "";
 
 app.listen(PORT, () => {
-  // checkAppointments();
+  checkAppointments();
   startCommandsBotEvent();
 });
 
