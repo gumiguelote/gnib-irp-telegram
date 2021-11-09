@@ -58,32 +58,32 @@ const returnTimeStamp = () => {
 
 const startCommandsBotEvent = () => {
   bot.onText(/\/start (.+)/, (msg, match) => {
-    const command = match[1];
-
-    if (command === "myid") {
-      bot.sendMessage(CHAT_ID, msg.chat.id);
-    }
-
-    if (command === "viewcontent") {
-      bot.sendMessage(CHAT_ID, content);
-    }
-
-    if (command === "clearcontent") {
-      content = "";
-      bot.sendMessage(CHAT_ID, "Cleared");
-    }
-
-    if (command === "irpsite") {
-      bot.sendMessage(
-        CHAT_ID,
-        "https://burghquayregistrationoffice.inis.gov.ie/Website/AMSREG/AMSRegWeb.nsf/AppSelect?OpenForm"
-      );
+    switch (match[1]) {
+      case "myid":
+        bot.sendMessage(CHAT_ID, msg.chat.id);
+        break;
+      case "viewcontent":
+        bot.sendMessage(CHAT_ID, content);
+        break;
+      case "clearcontent":
+        content = "";
+        bot.sendMessage(CHAT_ID, "Cleared");
+        break;
+      case "irpsite":
+        bot.sendMessage(
+          CHAT_ID,
+          "https://burghquayregistrationoffice.inis.gov.ie/Website/AMSREG/AMSRegWeb.nsf/AppSelect?OpenForm"
+        );
+        break;
+      default:
+        bot.sendMessage(CHAT_ID, "Invalid command");
     }
   });
 
   bot.onText(/\/help/, (msg, match) => {
     const commands = `
-/start myid  -> Show the chat_id
+/start myid  -> Show chat_id
+/start irpsite  -> Return IRP-GNIB Form (site)
 /start viewcontent -> Show log
 /start clearcontent -> Clear log from memory`;
     bot.sendMessage(CHAT_ID, commands);
