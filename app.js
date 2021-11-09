@@ -69,6 +69,7 @@ const startCommandsBotEvent = () => {
     }
 
     if (command === "clearcontent") {
+      content = "";
       bot.sendMessage(CHAT_ID, "Cleared");
     }
 
