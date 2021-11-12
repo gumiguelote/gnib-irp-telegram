@@ -1,3 +1,4 @@
+const fs = require("fs");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -10,19 +11,12 @@ const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const INTERVAL_REQUEST_IN_SECONDS = process.env.INTERVAL_REQUEST_IN_SECONDS;
 const CHAT_ID = process.env.CHAT_ID;
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
-var content = "";
 
 app.listen(PORT, () => {
   checkAppointments();
   startCommandsBotEvent();
-});
-
-app.get("/", (req, res) => {
-  res.send(`<script>
-  setTimeout(() => {
-    window.location.reload()
-  }, 5000)
-  </script> ${content}`);
+  schedulePeriodicReports();
+  saveLog(`Started - ${returnTimeStamp()}`);
 });
 
 const checkAppointments = () => {
@@ -31,22 +25,19 @@ const checkAppointments = () => {
       const { data } = await axios.get(`${process.env.APPOINTMENTS_ENDPOINT}`);
       const isEmpty = JSON.stringify(data) === '{"empty":"TRUE"}';
       if (!isEmpty) {
-        content += `${returnTimeStamp()} - 
-          <a 
-            href="https://burghquayregistrationoffice.inis.gov.ie/Website/AMSREG/AMSRegWeb.nsf/AppSelect?OpenForm">
-            Appointment Found!
-          </a>
-        <br>`;
+        saveLog(`${returnTimeStamp()} - 
+          https://burghquayregistrationoffice.inis.gov.ie/Website/AMSREG/AMSRegWeb.nsf/AppSelect?OpenForm
+          Appointment Found!`);
         bot.sendMessage(
           CHAT_ID,
-          ` Appointment Found!
+          `Appointment Found!
             https://burghquayregistrationoffice.inis.gov.ie/Website/AMSREG/AMSRegWeb.nsf/AppSelect?OpenForm
             `
         );
       }
-      content += `Request -> ${returnTimeStamp()} - Nothing found <br>`;
+      saveLog(`Request -> ${returnTimeStamp()} - Nothing found`);
     } catch (error) {
-      content += `Request -> ${returnTimeStamp()} - ${error} <br>`;
+      saveLog(`Request -> ${returnTimeStamp()} - ${error}`);
       bot.sendMessage(CHAT_ID, `${error}`);
     }
   }, INTERVAL_REQUEST_IN_SECONDS * 1000);
@@ -62,12 +53,8 @@ const startCommandsBotEvent = () => {
       case "myid":
         bot.sendMessage(CHAT_ID, msg.chat.id);
         break;
-      case "viewcontent":
-        bot.sendMessage(CHAT_ID, content);
-        break;
-      case "clearcontent":
-        content = "";
-        bot.sendMessage(CHAT_ID, "Cleared");
+      case "report":
+        bot.sendDocument(CHAT_ID, "./reports/report.txt");
         break;
       case "irpsite":
         bot.sendMessage(
@@ -84,8 +71,20 @@ const startCommandsBotEvent = () => {
     const commands = `
 /start myid  -> Show chat_id
 /start irpsite  -> Return IRP-GNIB Form (site)
-/start viewcontent -> Show log
-/start clearcontent -> Clear log from memory`;
+/start report -> Show report file`;
     bot.sendMessage(CHAT_ID, commands);
   });
+};
+
+const saveLog = (data) => {
+  fs.appendFile("./reports/report.txt", `${data}\n`, function (err) {
+    if (err) throw err;
+    console.log("File is created successfully.");
+  });
+};
+
+const schedulePeriodicReports = () => {
+  setInterval(async () => {
+    bot.sendDocument(CHAT_ID, "./reports/report.txt");
+  }, 600 * 1000);
 };
