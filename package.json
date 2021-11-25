@@ -4,14 +4,14 @@
   "description": "irp-gnib-telegram-notification",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js"
   },
   "author": "Gustavo Miguelote",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.24.0",
-    "dotenv": "^10.0.0",
-    "express": "^4.17.1",
-    "node-telegram-bot-api": "^0.54.0"
+    "axios": "0.24.0",
+    "dotenv": "10.0.0",
+    "express": "4.17.1",
+    "node-telegram-bot-api": "0.54.0"
   }
 }
